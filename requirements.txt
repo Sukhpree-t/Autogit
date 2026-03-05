@@ -1,0 +1,4 @@
+gitpython
+watchdog
+schedule
+requests
