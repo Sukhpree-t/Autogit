@@ -1,8 +1,10 @@
 import tkinter as tk
 from tkinter import filedialog, ttk
+import os
+from datetime import datetime
 from modules.repo_manager import RepoManager
 from modules.auto_commit import AutoCommit
-from modules.settings_manager import load, save
+from modules.settings_manager import load, save, settings_path
 
 class App:
 
@@ -10,12 +12,16 @@ class App:
         self.root=root
         self.root.title("AutoGit SSH")
 
+        # Setup log file path based on settings directory
+        self.log_file = os.path.join(os.path.expanduser("~"), ".autogit", "autogit.log")
+
         self.repo_manager=RepoManager()
         self.auto=None
 
         self.settings=load()
 
         self.build()
+        self.log_msg("--- Application Started ---")
 
     def build(self):
 
@@ -68,8 +74,19 @@ class App:
         self.log.pack()
 
     def log_msg(self,msg):
-        self.log.insert(tk.END,msg+"\n")
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        formatted_msg = f"[{timestamp}] {msg}"
+        
+        # Log to UI
+        self.log.insert(tk.END, formatted_msg + "\n")
         self.log.see(tk.END)
+        
+        # Log to File
+        try:
+            with open(self.log_file, "a") as f:
+                f.write(formatted_msg + "\n")
+        except Exception as e:
+            print(f"Failed to write to log file: {e}")
 
     def fetch_repos(self):
         username = self.username.get()
