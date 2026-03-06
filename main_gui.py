@@ -12,8 +12,9 @@ class App:
         self.root=root
         self.root.title("AutoGit SSH")
 
-        # Setup log file path based on settings directory
-        self.log_file = os.path.join(os.path.expanduser("~"), ".autogit", "autogit.log")
+        # Setup log file path using settings_path logic
+        s_path = settings_path()
+        self.log_file = os.path.join(os.path.dirname(s_path), "autogit.log")
 
         self.repo_manager=RepoManager()
         self.auto=None
@@ -76,6 +77,9 @@ class App:
     def log_msg(self,msg):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         formatted_msg = f"[{timestamp}] {msg}"
+        
+        # Log to Console
+        print(formatted_msg)
         
         # Log to UI
         self.log.insert(tk.END, formatted_msg + "\n")
